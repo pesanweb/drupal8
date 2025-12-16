@@ -38,7 +38,7 @@ services:
     ports:
       - "8087:80"
     volumes:
-      - ./nginx-conf/drupal8.conf:/etc/nginx/conf.d/default.conf:ro
+      # - ./nginx-conf/drupal8.conf:/etc/nginx/conf.d/default.conf:ro
       - ./drupal8-src:/var/www/html:ro
       - drupal8_files_volume:/var/www/html/web/sites/default/files
     networks:
