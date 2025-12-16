@@ -9,29 +9,42 @@ volumes:
   drupal8_files_volume:
 
 services:
+  # --- Database Service ---
   drupal8_db:
     image: 'mariadb:latest'
     container_name: d8_db
     environment:
-      MYSQL_ROOT_PASSWORD: 'your_password'
+      MYSQL_ROOT_PASSWORD: 'your_root_password'
       MYSQL_DATABASE: 'drupal8'
+      MYSQL_USER: 'drupal8user'
+      MYSQL_PASSWORD: 'your_drupal8_password'
     volumes:
       - drupal8_db_data:/var/lib/mysql
     networks:
       - drupal8_net
+    restart: unless-stopped
 
+  # --- PHP-FPM Service ---
   drupal8_fpm:
-    # Jika build lokal di terminal, pakai image:
-    image: drupal:8.9.20-php7.4-fpm-alpine3.13 
+    image: 'drupal:8.9.20-php7.4-fpm-alpine3.13'
     container_name: d8_fpm
+    environment:
+      # Variabel ini akan dibaca oleh settings.php
+      DB_NAME: 'drupal8'
+      DB_USER: 'drupal8user'
+      DB_PASS: 'your_drupal8_password'
+      DB_HOST: 'drupal8_db' 
     volumes:
-      # GUNAKAN PATH LENGKAP DI PORTAINER
       - ./drupal8-src:/var/www/html:rw
       - drupal8_files_volume:/var/www/html/web/sites/default/files
       - ./drupal-data/settings_d8.php:/var/www/html/web/sites/default/settings.php
     networks:
       - drupal8_net
+    depends_on:
+      - drupal8_db
+    restart: unless-stopped
 
+  # --- Nginx Service ---
   drupal8_nginx:
     image: "nginx:1.29-alpine"
     container_name: d8_nginx
@@ -45,3 +58,20 @@ services:
       - drupal8_net
     depends_on:
       - drupal8_fpm
+    restart: unless-stopped
+
+  # --- phpMyAdmin Service ---
+  phpmyadmin8:
+    image: linuxserver/phpmyadmin:5.2.2
+    container_name: d8_phpmyadmin
+    environment:
+      PMA_HOST: drupal8_db
+      PMA_USER: root
+      PMA_PASSWORD: your_root_password
+    ports:
+      - "8084:80"
+    networks:
+      - drupal8_net
+    depends_on:
+      - drupal8_db
+    restart: unless-stopped
