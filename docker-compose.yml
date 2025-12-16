@@ -1,0 +1,47 @@
+version: '3.8'
+
+networks:
+  drupal8_net:
+    driver: bridge
+
+volumes:
+  drupal8_db_data:
+  drupal8_files_volume:
+
+services:
+  drupal8_db:
+    image: 'mariadb:latest'
+    container_name: d8_db
+    environment:
+      MYSQL_ROOT_PASSWORD: 'your_password'
+      MYSQL_DATABASE: 'drupal8'
+    volumes:
+      - drupal8_db_data:/var/lib/mysql
+    networks:
+      - drupal8_net
+
+  drupal8_fpm:
+    # Jika build lokal di terminal, pakai image:
+    image: my-custom-drupal8:latest 
+    container_name: d8_fpm
+    volumes:
+      # GUNAKAN PATH LENGKAP DI PORTAINER
+      - /home/user/drupal8-project/drupal8-src:/var/www/html:rw
+      - drupal8_files_volume:/var/www/html/web/sites/default/files
+      - /home/user/drupal8-project/drupal-data/settings_d8.php:/var/www/html/web/sites/default/settings.php
+    networks:
+      - drupal8_net
+
+  drupal8_nginx:
+    image: "nginx:1.29-alpine"
+    container_name: d8_nginx
+    ports:
+      - "8087:80"
+    volumes:
+      - /home/user/drupal8-project/nginx-conf/drupal8.conf:/etc/nginx/conf.d/default.conf:ro
+      - /home/user/drupal8-project/drupal8-src:/var/www/html:ro
+      - drupal8_files_volume:/var/www/html/web/sites/default/files
+    networks:
+      - drupal8_net
+    depends_on:
+      - drupal8_fpm
