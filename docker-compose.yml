@@ -26,7 +26,7 @@ services:
     container_name: d8_fpm
     volumes:
       # GUNAKAN PATH LENGKAP DI PORTAINER
-      - /home/user/drupal8-project/drupal8-src:/var/www/html:rw
+      - ./drupal8-src:/var/www/html:rw
       - drupal8_files_volume:/var/www/html/web/sites/default/files
       - /home/user/drupal8-project/drupal-data/settings_d8.php:/var/www/html/web/sites/default/settings.php
     networks:
