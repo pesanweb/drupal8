@@ -27,6 +27,7 @@ services:
   # --- PHP-FPM Service ---
   drupal8_fpm:
     image: 'drupal:8.9.20-php7.4-fpm-alpine3.13'
+    working_dir: /var/www/html/drupal8 # Memaksa PHP bekerja di folder ini
     container_name: d8_fpm
     environment:
       # Variabel ini akan dibaca oleh settings.php
@@ -35,7 +36,9 @@ services:
       DB_PASS: 'your_drupal8_password'
       DB_HOST: 'drupal8_db' 
     volumes:
-      - ./drupal8-src:/var/www/html:rw
+    # Source utama dipasang ke sub-folder 'drupal8'
+      - ./drupal8-src:/var/www/html/drupal8:rw
+      # Folder files dipasang secara spesifik
       - drupal8_files_volume:/var/www/html/web/sites/default/files
       - ./drupal-data/settings_d8.php:/var/www/html/web/sites/default/settings.php
     networks:
@@ -52,10 +55,11 @@ services:
       - "8087:80"
     volumes:
       - ./nginx-conf/drupal8.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./drupal8-src:/var/www/html:ro
+      # Nginx harus memiliki path yang PERSIS sama dengan FPM
+      - ./drupal8-src:/var/www/html/drupal8:ro
       # - drupal8_files_volume:/var/www/html/web/ sites/default/files 
       # html diganti atau sama dengan folder web (diatas salah dan diperbaiki di bawah), sudah diinstall di drupal src php7 container composer install
-      - drupal8_files_volume:/var/www/html/web/sites/default/files
+      - drupal8_files_volume:/var/www/html/drupal8/web/sites/default/files
     networks:
       - drupal8_net
     depends_on:
