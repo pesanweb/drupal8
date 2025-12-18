@@ -40,7 +40,7 @@ services:
       - ./drupal8-src:/var/www/html/drupal8:rw
       # Folder files dipasang secara spesifik
       - drupal8_files_volume:/var/www/html/web/sites/default/files
-      - ./drupal-data/settings_d8.php:/var/www/html/web/sites/default/settings.php
+      - ./drupal-data/settings_d8.php:/var/www/html/drupal8/web/sites/default/settings.php
     networks:
       - drupal8_net
     depends_on:
