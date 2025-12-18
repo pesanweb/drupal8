@@ -55,7 +55,7 @@ services:
       - ./drupal8-src:/var/www/html:ro
       # - drupal8_files_volume:/var/www/html/web/ sites/default/files 
       # html diganti atau sama dengan folder web (diatas salah dan diperbaiki di bawah), sudah diinstall di drupal src php7 container composer install
-      - drupal8_files_volume:/var/www/web/sites/default/files
+      - drupal8_files_volume:/var/www/html/sites/default/files
     networks:
       - drupal8_net
     depends_on:
