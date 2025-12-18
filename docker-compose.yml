@@ -36,8 +36,8 @@ services:
       DB_HOST: 'drupal8_db' 
     volumes:
       - ./drupal8-src:/var/www/html:rw
-      - drupal8_files_volume:/var/www/html/web/sites/default/files
-      - ./drupal-data/settings_d8.php:/var/www/html/web/sites/default/settings.php
+      - drupal8_files_volume:/var/www/html/sites/default/files
+      - ./drupal-data/settings_d8.php:/var/www/html/sites/default/settings.php
     networks:
       - drupal8_net
     depends_on:
